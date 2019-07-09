@@ -1,0 +1,162 @@
+{
+	"metadata": {
+		"version": 1
+	},
+	"application": {
+		"name": "nodejs-hello-world",
+		"language": "NODEJS",
+		"artifact_store": {
+			"type": "s3",
+			"repositories": [
+				{
+					"category": "rc-packaging",
+					"bucket": "guide-rails-calculi-rc"
+				},
+				{
+					"category": "final-packaging",
+					"bucket": "guide-rails-calculi-final"
+				},
+				{
+					"category": "logs",
+					"bucket": "guide-rails-calculi-logs"
+				}
+			]
+		}
+	},
+	"pipeline": {
+		"segments": [
+			{
+				"name": "Build",
+				"segment_type": "build",
+				"job_steps": [
+					{
+						"name": "Docker",
+						"definition": "Docker",
+						"command": "docker build -t node-helloworld:latest -f ./Dockerfile .",
+						"properties": null
+					}
+				],
+				"exit_actions": {
+					"default": {
+						"code_analysis": {
+							"publish": false,
+							"properties": null
+						}
+					},
+					"on_success": {
+						"code_analysis": null
+					},
+					"on_failure": {
+						"code_analysis": null
+					},
+					"on_abort": {
+						"code_analysis": null
+					}
+				},
+				"properties": [
+					{
+						"name": "npm.cache",
+						"description": "npm cache path is set to ${SEGMENT_BASE_DIR}/cache/.npm by default, when caching is enabled. Caches are maintained on the worker where your build gets allocated. For a new worker assigned to the build, the cache will be re-created",
+						"value": "${SEGMENT_BASE_DIR}/cache/.npm"
+					}
+				],
+				"deployment_strategy": {},
+				"application_init": {
+					"command": "",
+					"arguments": null
+				},
+				"instance_tags": [
+					{
+						"name": "application.name",
+						"value": "((application.name))"
+					}
+				],
+				"post_deployment_actions": {
+					"instances": null,
+					"loadbalanced": false,
+					"loadbalancer": {
+						"TargetGroupName": "",
+						"TargetGroupPort": 0,
+						"TargetGroupProtocol": "",
+						"TargetType": "",
+						"VPCID": "",
+						"HealthCheckEnabled": false,
+						"HealthCheckPort": "",
+						"UnhealthyThresholdCount": 0
+					}
+				},
+				"cache_info": {
+					"paths": [
+						"((npm.cache))"
+					]
+				}
+			}
+		],
+		"exit_actions": {
+			"default": {
+				"fetch_logs": true,
+				"notifications": [
+					{
+						"type": "slack",
+						"send_notification": false,
+						"to": null,
+						"message": ""
+					}
+				],
+				"code_analysis": {
+					"publish": true,
+					"properties": null
+				},
+				"delete_instances": true
+			},
+			"on_success": {
+				"notifications": [
+					{
+						"type": "slack",
+						"send_notification": false,
+						"to": null,
+						"message": ""
+					}
+				],
+				"code_analysis": null
+			},
+			"on_failure": {
+				"notifications": [
+					{
+						"type": "slack",
+						"send_notification": false,
+						"to": null,
+						"message": ""
+					}
+				],
+				"code_analysis": null
+			},
+			"on_abort": {
+				"notifications": [
+					{
+						"type": "slack",
+						"send_notification": false,
+						"to": null,
+						"message": ""
+					}
+				],
+				"code_analysis": null
+			}
+		},
+		"default_properties": null,
+		"deployment_files": [],
+		"application_init": {
+			"command": "",
+			"arguments": null
+		},
+		"process": {
+			"init": {
+				"command": "bin/start-service.sh"
+			}
+		},
+		"releases": []
+	},
+	"organization": {
+		"orgname": "Tutorial"
+	}
+}
