@@ -90,7 +90,7 @@
 							}
 						],
 						"docker_options": {
-							"repository": "pipeline-image-ui-tools:0.0.7-GX-5880"
+							"repository": "pipeline-image-ui-tools"
 						}
 					}
 				]
